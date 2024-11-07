@@ -7,14 +7,31 @@ from random import randint
 import pygame as pg
 
 pg.init()
-screen = pg.display.set_mode((600, 600))
+screen = pg.display.set_mode((240, 420))
 clock = pg.time.Clock()
 
+# les coordonnées de rectangle que l'on dessine
+width = 20 # largeur du rectangle en pixels
+height = 20 # hauteur du rectangle en pixels
+color_white = (255, 255, 255) # couleur blanche
+color_red=(255,0,0)
+color_blue=(85,156,255)
+color_green1=(0,255,0)
+color_green2=(0,200,0)
+color_black=(0,0,0)
+snake = [(4, 11),(3, 11),(2, 11)]
+head=snake[0]
+apple=False
+score=0
+direction=(1,0)
+l,L=12,21
+size=20
 # on rajoute une condition à la boucle: si on la passe à False le programme s'arrête
 running = True
 while running:
-
-    clock.tick(1)
+    screen.fill(color_green1)
+    clock.tick(5)
+    action=False
 
     # on itère sur tous les évênements qui ont eu lieu depuis le précédent appel
     # ici donc tous les évènements survenus durant la seconde précédente
@@ -25,31 +42,108 @@ while running:
             running = False
         # un type de pg.KEYDOWN signifie que l'on a appuyé une touche du clavier
         elif event.type == pg.KEYDOWN:
-            # si la touche est "Q" on veut quitter le programme
+            if event.key == pg.K_RIGHT:
+                if direction!=(-1,0):
+                    direction=(1,0)
+                    snake.pop()
+                    x,y=snake[0][0],snake[0][1]
+                    new_cell=[(x+direction[0],y+direction[1])]
+                    snake=new_cell+snake
+                    action=True
+            if event.key == pg.K_LEFT:
+                if direction!=(1,0):
+                    direction=(-1,0)
+                    snake.pop()
+                    x,y=snake[0][0],snake[0][1]
+                    new_cell=[(x+direction[0],y+direction[1])]
+                    snake=new_cell+snake
+                    action=True
+            if event.key == pg.K_UP:
+                if direction!=(0,1):
+                    direction=(0,-1)
+                    snake.pop()
+                    x,y=snake[0][0],snake[0][1]
+                    new_cell=[(x+direction[0],y+direction[1])]
+                    snake=new_cell+snake
+                    action=True
+            if event.key == pg.K_DOWN:
+                if direction!=(0,-1):
+                    direction=(0,1)
+                    snake.pop()
+                    x,y=snake[0][0],snake[0][1]
+                    new_cell=[(x+direction[0],y+direction[1])]
+                    snake=new_cell+snake
+                    action=True
             if event.key == pg.K_q:
                 running = False
 
-    # xxx ici c'est discutable, car si on tape 'q'
 
-    # les coordonnées de rectangle que l'on dessine
-    width = 20 # largeur du rectangle en pixels
-    height = 20 # hauteur du rectangle en pixels
-    color = (255, 255, 255) # couleur blanche
-    for x in range(30):
+    # xxx ici c'est discutable, car si on tape 'q'
+    for x in range(l):
         if x%2==0:
-            for y in range(15):
-                x2=x*20
-                y2=y*40+20
+            for y in range(L//2+1):
+                x2=x*size
+                y2=y*size*2
                 rect = pg.Rect(x2, y2, width, height)
-                pg.draw.rect(screen, color, rect)
-                pg.display.update()
+                pg.draw.rect(screen, color_green2, rect)
         else:
-            for y in range(15):
-                x2=x*20
-                y2=y*40
+            for y in range(L//2+1):
+                x2=x*size
+                y2=y*size*2+size
                 rect = pg.Rect(x2, y2, width, height)
-                pg.draw.rect(screen, color, rect)
-                pg.display.update()
+                pg.draw.rect(screen, color_green2, rect)
+
+    # on place la pomme
+    if apple:
+        rect=pg.Rect(apple_x*size,apple_y*size,width,height)
+        pg.draw.rect(screen,color_red,rect)
+        apple=True
+
+
+    if not apple:
+        apple_x,apple_y=snake[-1]
+        while (apple_x,apple_y) in snake:
+
+            apple_x,apple_y=randint(0,l-1),randint(0,L-1)
+        
+        rect=pg.Rect(apple_x*size,apple_y*size,width,height)
+        pg.draw.rect(screen,color_red,rect)
+        apple=True
+
+
+
+    if head==(apple_x,apple_y):
+        score+=1
+        apple=False
+        tail_direction=(snake[-1][0]-snake[-2][0],snake[-1][1]-snake[-2][1])
+        new_cell2=[(snake[-1][0]+tail_direction[0],snake[-1][1]+tail_direction[1])]
+        snake=snake+new_cell2
+
+
+
+    # on dessine le serpent
+    if not action:
+        snake.pop()
+        x,y=snake[0][0],snake[0][1]
+        new_cell=[(x+direction[0],y+direction[1])]
+        snake=new_cell+snake
+
+    for k in snake:
+        x=k[0]*size
+        y=k[1]*size
+        rect = pg.Rect(x, y, width, height)
+        pg.draw.rect(screen, color_blue,rect)
+        
+    head=snake[0]
+    if head in snake[1::]:
+        running=False
+    if head[0]>=l or head[1]>=L or head[0]<0 or head[1]<0:
+        running=False
+
+    pg.display.update()
+    score_msg='Score = ' +str(score)
+    pg.display.set_caption(score_msg)
+
 
 # Enfin on rajoute un appel à pg.quit()
 # Cet appel va permettre à Pygame de "bien s'éteindre" et éviter des bugs sous Windows
