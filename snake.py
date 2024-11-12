@@ -1,8 +1,3 @@
-"""
-v1 : pareil mais au moins on peut sortir du programme
-avec la touche 'q', ou avec la souris en fermant la fenêtre
-"""
-
 from random import randint
 import pygame as pg
 
@@ -10,15 +5,16 @@ pg.init()
 screen = pg.display.set_mode((240, 420))
 clock = pg.time.Clock()
 
-# les coordonnées de rectangle que l'on dessine
+# CONSTANTES
+
 width = 20 # largeur du rectangle en pixels
 height = 20 # hauteur du rectangle en pixels
-color_white = (255, 255, 255) # couleur blanche
-color_red=(255,0,0)
-color_blue=(85,156,255)
-color_green1=(0,255,0)
-color_green2=(0,200,0)
-color_black=(0,0,0)
+white = (255, 255, 255) # couleur blanche
+red=(255,0,0)
+blue=(85,156,255)
+green1=(0,255,0)
+green2=(0,200,0)
+black=(0,0,0)
 snake = [(4, 11),(3, 11),(2, 11)]
 head=snake[0]
 apple=False
@@ -26,10 +22,12 @@ score=0
 direction=(1,0)
 l,L=12,21
 size=20
+
 # on rajoute une condition à la boucle: si on la passe à False le programme s'arrête
 running = True
+
 while running:
-    screen.fill(color_green1)
+    screen.fill(green1)
     clock.tick(5)
     action=False
 
@@ -85,20 +83,21 @@ while running:
                 x2=x*size
                 y2=y*size*2
                 rect = pg.Rect(x2, y2, width, height)
-                pg.draw.rect(screen, color_green2, rect)
+                pg.draw.rect(screen, green2, rect)
         else:
             for y in range(L//2+1):
                 x2=x*size
                 y2=y*size*2+size
                 rect = pg.Rect(x2, y2, width, height)
-                pg.draw.rect(screen, color_green2, rect)
+                pg.draw.rect(screen, green2, rect)
 
     # on place la pomme
     if apple:
         rect=pg.Rect(apple_x*size,apple_y*size,width,height)
-        pg.draw.rect(screen,color_red,rect)
+        pg.draw.rect(screen,red,rect)
         apple=True
 
+    # s'il n'y a plus de pomme on en fait spawn une
 
     if not apple:
         apple_x,apple_y=snake[-1]
@@ -107,9 +106,10 @@ while running:
             apple_x,apple_y=randint(0,l-1),randint(0,L-1)
         
         rect=pg.Rect(apple_x*size,apple_y*size,width,height)
-        pg.draw.rect(screen,color_red,rect)
+        pg.draw.rect(screen,red,rect)
         apple=True
 
+    # si l'utilisateur mange la pomme il grossit
 
 
     if head==(apple_x,apple_y):
@@ -122,25 +122,37 @@ while running:
 
 
     # on dessine le serpent
+    # si l'utilisateur veut tourner
+
     if not action:
         snake.pop()
         x,y=snake[0][0],snake[0][1]
         new_cell=[(x+direction[0],y+direction[1])]
         snake=new_cell+snake
 
+    # sinon on le fait juste avancer
+
     for k in snake:
         x=k[0]*size
         y=k[1]*size
         rect = pg.Rect(x, y, width, height)
-        pg.draw.rect(screen, color_blue,rect)
-        
+        pg.draw.rect(screen, blue,rect)
+
+    # on perd si on se mange la queue
+
     head=snake[0]
     if head in snake[1::]:
         running=False
+
+    # on perd si on sort de l'arène
+
     if head[0]>=l or head[1]>=L or head[0]<0 or head[1]<0:
         running=False
 
     pg.display.update()
+
+    # on actualise le score
+
     score_msg='Score = ' +str(score)
     pg.display.set_caption(score_msg)
 
