@@ -1,4 +1,5 @@
 from random import randint
+from collections import deque
 import pygame as pg
 
 pg.init()
@@ -36,6 +37,8 @@ def act_event(event,direction,snake,action):
         running = False
     # un type de pg.KEYDOWN signifie que l'on a appuyé une touche du clavier
     elif event.type == pg.KEYDOWN:
+        if event.key == pg.K_q:
+            running = False
         if event.key == pg.K_RIGHT:
             if direction!=(-1,0):
                 direction=(1,0)
@@ -68,8 +71,6 @@ def act_event(event,direction,snake,action):
                 new_cell=[(x+direction[0],y+direction[1])]
                 snake=new_cell+snake
                 action=True
-        if event.key == pg.K_q:
-            running = False
     return running,direction,snake,action
 
 def damier(w,h,color,size,l,L):
