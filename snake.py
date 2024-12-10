@@ -29,8 +29,7 @@ def first_fruit(l,L):
     return apple_x,apple_y
 
 
-def act_event(event,direction,snake,action):
-    running=True
+def act_event(running,event,direction,snake,action):
     # chaque évênement à un type qui décrit la nature de l'évênement
     # un type de pg.QUIT signifie que l'on a cliqué sur la "croix" de la fenêtre
     if event.type == pg.QUIT:
@@ -145,7 +144,7 @@ def L_condition(snake,running):
 running = True
 apple_x,apple_y=first_fruit(l,L)
 
-while running:
+while running :
     screen.fill(green1)
     clock.tick(5)
     action=False
@@ -154,7 +153,7 @@ while running:
     # ici donc tous les évènements survenus durant 0.2 seconde précédente
 
     for event in pg.event.get():
-        running,direction,snake,action=act_event(event,direction,snake,action)
+        running,direction,snake,action=act_event(running,event,direction,snake,action)
 
     # on construit le damier
 
@@ -175,7 +174,8 @@ while running:
     # on perd si on se mange la queue ou si on sort de l'arène
 
     head=snake[0]
-    running=L_condition(snake,running)
+    if running :
+        running=L_condition(snake,running)
 
     pg.display.update()
 
