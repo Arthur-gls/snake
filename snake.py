@@ -16,7 +16,7 @@ blue=(85,156,255)
 green1=(0,255,0)
 green2=(0,200,0)
 black=(0,0,0)
-snake = [(4, 11),(3, 11),(2, 11)]
+snake = deque([(4, 11),(3, 11),(2, 11)])
 head=snake[0]
 apple=False
 score=0
@@ -43,32 +43,32 @@ def act_event(running,event,direction,snake,action):
                 direction=(1,0)
                 snake.pop()
                 x,y=snake[0][0],snake[0][1]
-                new_cell=[(x+direction[0],y+direction[1])]
-                snake=new_cell+snake
+                new_cell=(x+direction[0],y+direction[1])
+                snake.appendleft(new_cell)
                 action=True
         if event.key == pg.K_LEFT:
             if direction!=(1,0):
                 direction=(-1,0)
                 snake.pop()
                 x,y=snake[0][0],snake[0][1]
-                new_cell=[(x+direction[0],y+direction[1])]
-                snake=new_cell+snake
+                new_cell=(x+direction[0],y+direction[1])
+                snake.appendleft(new_cell)
                 action=True
         if event.key == pg.K_UP:
             if direction!=(0,1):
                 direction=(0,-1)
                 snake.pop()
                 x,y=snake[0][0],snake[0][1]
-                new_cell=[(x+direction[0],y+direction[1])]
-                snake=new_cell+snake
+                new_cell=(x+direction[0],y+direction[1])
+                snake.appendleft(new_cell)
                 action=True
         if event.key == pg.K_DOWN:
             if direction!=(0,-1):
                 direction=(0,1)
                 snake.pop()
                 x,y=snake[0][0],snake[0][1]
-                new_cell=[(x+direction[0],y+direction[1])]
-                snake=new_cell+snake
+                new_cell=(x+direction[0],y+direction[1])
+                snake.appendleft(new_cell)
                 action=True
     return running,direction,snake,action
 
@@ -113,16 +113,16 @@ def growth(snake,apple_x,apple_y,score,head,apple):
         score+=1
         apple=False
         tail_direction=(snake[-1][0]-snake[-2][0],snake[-1][1]-snake[-2][1])
-        new_cell2=[(snake[-1][0]+tail_direction[0],snake[-1][1]+tail_direction[1])]
-        snake=snake+new_cell2
+        new_cell2=(snake[-1][0]+tail_direction[0],snake[-1][1]+tail_direction[1])
+        snake.append(new_cell2)
     return snake,score,apple
 
 def act_snake(snake,action,direction,width,height,size,color):
     if not action:
         snake.pop()
         x,y=snake[0][0],snake[0][1]
-        new_cell=[(x+direction[0],y+direction[1])]
-        snake=new_cell+snake
+        new_cell=(x+direction[0],y+direction[1])
+        snake.appendleft(new_cell)
 
     for k in snake:
         x=k[0]*size
@@ -133,8 +133,9 @@ def act_snake(snake,action,direction,width,height,size,color):
 
 def L_condition(snake,running):
     head=snake[0]
-    if head in snake[1::]:
-        running=False
+    for i in range(1,len(snake)):
+        if head==snake[i]:
+            running=False
 
     if head[0]>=l or head[1]>=L or head[0]<0 or head[1]<0:
         running=False
